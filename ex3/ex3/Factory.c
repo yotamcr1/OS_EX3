@@ -212,10 +212,9 @@ int main(int argc, char* argv[])
 	PrintQueue(new_node);
 	printf("%d\n", Empty(new_node));*/
 	//node* queue = read_priorities_and_create_queue(fptr_priorities);
-	int x = create_primary_thread(fptr_tasks, fptr_priorities, num_of_tasks);
+	//int x = create_primary_thread(fptr_tasks, fptr_priorities, num_of_tasks);
 	//PrintQueue(queue);
 }
 
 
-//static DWORD create_threads
 
