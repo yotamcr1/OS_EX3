@@ -21,6 +21,10 @@
 #define DECIMAL_BASE 10
 #define TIMEOUT 10 // have to check it again
 
+
+//Global Variable Decleration of Factory.c:
+char inout_file_address[MAX_OUTPUT_STR_LENGTH];
+
 //struct declaration
 /*
 typedef struct thread {
@@ -29,13 +33,6 @@ typedef struct thread {
 	int task_number;
 } thread_values, *Pthread_values;
 */
-typedef struct t {
-	char* inout_address;
-	HANDLE inout_file;
-	DWORD orig_file_size;
-	int offset;
-	int max_length;
-} thread_relevant_values, * Pthread_relevant_values;
 
 
 typedef struct node {
@@ -49,6 +46,15 @@ typedef struct lock {
 	HANDLE turnstile;//mutex
 	HANDLE roomEmpty; //semaphore
 }lock;
+
+typedef struct t {
+	HANDLE inout_file;
+	node* priority_queue;
+	lock* lock_t;
+	int max_length;
+
+} thread_relevant_values, * Pthread_relevant_values;
+
 
 //lock functions:
 lock* InitializLock(int num_of_threads);

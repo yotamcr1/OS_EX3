@@ -10,22 +10,23 @@ node* InitializeQueue(int offset) {//check if we dont need to seperate this from
 //input: offset in byte of the priority in the tasks file
 //output: pointer to the new node that allocated
 
-#define ERROR_CODE ((int)(-1))
-#define MAX_TASK_LEN 9
-#define MAX_PRIMARY_NUMBERS 30
-#define MAX_PRIMARY_NUMBERS_ARRAY 90
-#define MAX_OUTPUT_STR_LENGTH 126
-#define MAX_THREADS 64
-#define MAX_NUM_BYTE 10
-#define DECIMAL_BASE 10
-#define TIMEOUT 10 // have to check it again
+node* allocate_place_for_node(int offset) {
+	node* new_node = (node*)malloc(sizeof(node));
+	if (new_node != NULL) {
+		new_node->offset_in_bytes = offset;
+		new_node->next = NULL;
+	}
+	return new_node;
+}
 
 //the function return the first element offset in the queue
 //input: pointer to queue struct
 //output: the offset of the first element in the queue
 
 int Top(node* queue) {
-	return queue->offset_in_bytes;
+	if(!Empty(queue))
+		return queue->offset_in_bytes;
+	return ERROR_CODE;
 }
 
 
@@ -33,13 +34,30 @@ int Top(node* queue) {
 //input: pointe to the queue struct
 //output: pointer to the second element in the queue (the queue without the first element)
 node* Pop(node* queue) {
-	node* temp_node;
-	temp_node = queue->next;
-	free(queue);
-	return temp_node;
+	if (NULL == queue)
+		return NULL;
+	node* temp_queue = queue;
+	queue = queue->next;//this line ensures that all thread will have the same pointer!
+	return temp_queue;
+	
 }
 
-//queue functions:
+//the function add an element to the end of the queue
+//input: pointer to the queue struct
+//output: pointer to the new queue with the new element in the end of it
+node* Push(node* queue, int offset) {
+	node* new_node = allocate_place_for_node(offset);
+	if (queue == NULL) //if queue wasn't initialize
+		return new_node;
+	else {
+		node* temp_node = queue;
+		while (temp_node->next != NULL) {
+			temp_node = temp_node->next;
+		}
+		temp_node->next = new_node;
+		return queue;
+	}
+}
 
 //the function return true if the queue is empty and false otherwise
 //input: pointer to the queue struct
@@ -65,4 +83,15 @@ node* DestroyQueue(node* queue) {
 	return queue;
 }
 
-#endif
+//this function is only for us to check our queue functions
+void PrintQueue(node* queue)
+{
+	printf("[");
+	while (queue != NULL) {
+		printf("%d", queue->offset_in_bytes);
+		if (queue->next != NULL)
+			printf(", ");
+		queue = queue->next;
+	}
+	printf("]\n");
+}

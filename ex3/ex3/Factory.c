@@ -41,7 +41,6 @@ int* decompose_into_primary_numbers(int number, int* num_of_primary_numbers) {
 	return primary_numbers_global;
 }
 
-
 char* format_output_string(int* primary_numbers, int number, int num_of_primary_numbers) {
 	int i = 0;
 	char* output_string = (char*)malloc(MAX_OUTPUT_STR_LENGTH * sizeof(char));
@@ -93,12 +92,12 @@ node* read_priorities_and_create_queue(FILE* fptr) {
 }
 
 //we should  check if its necessary to calculate the absoulut values of the offsets. 
-int count_bytes_per_task(int* bytes_per_task, FILE* fptr) {
+int count_bytes_per_task(/*int* bytes_per_task,*/ FILE* fptr) {
 	int char_count = 0;
 	int max_length = 1;
 	int index = 0;
 	char c;
-	bytes_per_task[index] = char_count;
+	//bytes_per_task[index] = char_count;
 	index++;
 	for (c = getc(fptr); c != EOF; c = getc(fptr)) {
 		char_count++;
@@ -106,7 +105,7 @@ int count_bytes_per_task(int* bytes_per_task, FILE* fptr) {
 			char_count++; // \n is 2 chars in read_file function
 			if (max_length < char_count)
 				max_length = char_count;
-			bytes_per_task[index] = char_count;
+		//	bytes_per_task[index] = char_count;
 			index++;
 		}
 	}
@@ -118,8 +117,8 @@ HANDLE open_inout_handle_read_per(char* inout_address) {
 	HANDLE inout_file;
 	inout_file = CreateFileA(
 		inout_address,
-		GENERIC_READ, //Open file with write read
-		FILE_SHARE_READ, //the file should be shared by the threads.
+		GENERIC_READ | GENERIC_WRITE, //Open file with write read
+		FILE_SHARE_READ | FILE_SHARE_WRITE, //the file should be shared by the threads.
 		NULL, //default security mode
 		OPEN_ALWAYS, //The files are already created, so files are exist.
 		FILE_ATTRIBUTE_NORMAL, //normal attribute
@@ -134,15 +133,16 @@ HANDLE open_inout_handle_write_per(char* inout_address) {
 	HANDLE inout_file_wr;
 	inout_file_wr = CreateFileA(
 		inout_address,
-		GENERIC_WRITE, //Open file with write read
-		FILE_SHARE_WRITE, //the file should be shared by the threads.
+		GENERIC_READ | GENERIC_WRITE, //Open file with write read
+		FILE_SHARE_WRITE | FILE_SHARE_READ, //the file should be shared by the threads.
 		NULL, //default security mode
 		OPEN_ALWAYS, //The files are already created, so files are exist.
 		FILE_ATTRIBUTE_NORMAL, //normal attribute
 		NULL);//not relevant for open file operations. 
 	if (inout_file_wr == INVALID_HANDLE_VALUE) {
 		printf("Can't open the file for read within open_inout_handle_write_per func .\n");
-		/// neeeeed to do things here
+		exit(1);
+		/// neeeeed to do things heree
 	}
 	return inout_file_wr;
 }
@@ -157,97 +157,113 @@ DWORD get_file_orig_size(HANDLE inout_file) {
 }
 
 
-
+// pop first mission, read the relevant lines from the current place, call, synchronzie  
 static DWORD WINAPI write_output_file_per_thread(LPVOID lpParam) {
 	Pthread_relevant_values val = (Pthread_relevant_values)lpParam;
-	DWORD return_val = SetFilePointer(
-		val->inout_file, //inout file handle
-		val->offset, //offset from the start
-		NULL, //assume there is no 32 high bits to move
-		FILE_BEGIN //offset from the start of the file
-	);
+	int offset = 0, number_to_devide = 0;
 	DWORD dwBytesRead = 0, dwBytesWrite = 0;
-	int number_to_devide = 0;
-	char* str_buffer = (char*)malloc((val->max_length + 1) * sizeof(char));
-	if (ReadFile(val->inout_file, str_buffer, val->max_length, &dwBytesRead, NULL)) {
-		for (int i = 0; i < dwBytesRead && str_buffer[i] != '\r'; i++) {
-			if ((str_buffer[i] >= 48 && str_buffer[i] <= 57)) { //check if the char is a number 
-				number_to_devide = number_to_devide * 10 + (str_buffer[i] - '0'); //calculate the number related to the mission file
-				printf("%c\n", str_buffer[i]);
+	//Every thread will execute tasks from the input file until the queue will be empty. 
+	//Pop from queue must be within the critical regions, as well as write.
+	while (!Empty(val->priority_queue)) {
+		read_lock(val->lock_t);
+		node* current = Pop(val->priority_queue); // the first element within the queue step forward in all threads. current is previues first element.
+		offset = current->offset_in_bytes;
+		//free(current); we should close it but its trigger en error, i don't know why!!!
+		DWORD return_val = SetFilePointer(
+			val->inout_file, //inout file handle
+			offset, //offset from the start
+			NULL, //assume there is no 32 high bits to move
+			FILE_BEGIN //offset from the start of the file
+		);
+		if (return_val == INVALID_SET_FILE_POINTER) {
+			printf("cannot set file pointer within write ouput file per thread function. exit\n");
+			exit(1);
+			//should close here everything. sorry hen about the balagan!!
+		}
+		char* str_buffer = (char*)malloc((val->max_length + 1) * sizeof(char));
+		if (ReadFile(val->inout_file, str_buffer, val->max_length, &dwBytesRead, NULL)) {
+			for (int i = 0; i < dwBytesRead && str_buffer[i] != '\r'; i++) {
+				if ((str_buffer[i] >= 48 && str_buffer[i] <= 57)) { //check if the char is a number 
+					number_to_devide = number_to_devide * 10 + (str_buffer[i] - '0'); //calculate the number related to the mission file
+				}
 			}
 		}
-	}
-	else {
-		printf("Can't read the file within the write_output_file_per_thread function\n");
-		//need to do things ycarmi
-	}
-	DWORD orig_file_size = get_file_orig_size(val->inout_file); //the size always changed because we write to it
-	CloseHandle(val->inout_file);
+		else {
+			printf("Can't read the file within the write_output_file_per_thread function\n");
+			//need to do things ycarmi
+		}
+		read_release(val->lock_t);
 
-	printf("%d\n", number_to_devide);
-	int array_length;
-	int* array_of_div = decompose_into_primary_numbers(number_to_devide, &array_length);
-	qsort(array_of_div, array_length, sizeof(int), compare);
-	char* output_str = format_output_string(array_of_div, number_to_devide, array_length);
-	size_t output_size = strnlen_s(output_str, MAX_OUTPUT_STR_LENGTH);
-	HANDLE inout_write_per = open_inout_handle_write_per(val->inout_address);
-	return_val = SetFilePointer(
-		inout_write_per, //inout file handle
-		(int)orig_file_size, //offset from the start
-		NULL, //assume there is no 32 high bits to move
-		FILE_BEGIN //offset from the start of the file
-	);
-	if (!WriteFile(inout_write_per, output_str, output_size, &dwBytesWrite, NULL)) {
-		printf("error while trying to write into the output file. exit\n");
-		//need to do thinggggggs ycarmi
+		int array_length;
+		int* array_of_div = decompose_into_primary_numbers(number_to_devide, &array_length);
+		qsort(array_of_div, array_length, sizeof(int), compare);
+		char* output_str = format_output_string(array_of_div, number_to_devide, array_length);
+		size_t output_size = strnlen_s(output_str, MAX_OUTPUT_STR_LENGTH);
+		HANDLE inout_write_per = open_inout_handle_write_per(inout_file_address);
+		write_lock(val->lock_t);
+		DWORD orig_file_size = get_file_orig_size(val->inout_file); //the size always changed because we write to it, so this line in the safe place
+		return_val = SetFilePointer(
+			inout_write_per, //inout file handle
+			(int)orig_file_size, //offset from the start
+			NULL, //assume there is no 32 high bits to move
+			FILE_BEGIN //offset from the start of the file
+		);
+		if (!WriteFile(inout_write_per, output_str, output_size, &dwBytesWrite, NULL)) {
+			printf("error while trying to write into the output file. exit\n");
+			//need to do thinggggggs ycarmi
+		}
+		write_release(val->lock_t);
+		CloseHandle(inout_write_per);
 	}
-	CloseHandle(inout_write_per);
 }
-static DWORD create_threads(int max_length, char* inout_address, node* prior_queue, int num_of_threads) {
-	Pthread_relevant_values Pthread_values = (Pthread_relevant_values)malloc(sizeof(thread_relevant_values));
-	DWORD p_thread_ids;
-	if (NULL == Pthread_values)
-	{
-		printf("can't allocate memory within the create thread function.\n");
-		exit(1);
-	}
-	int temp_prior;
-	while (prior_queue != NULL)
-	{
 
-		Pthread_values->inout_file = open_inout_handle_read_per(inout_address);
-		DWORD orig_file_size = get_file_orig_size(Pthread_values->inout_file);
-		temp_prior = prior_queue->offset_in_bytes; //save the value of the first element
-		prior_queue = Pop(prior_queue);  //remove the first element from the queue
-		Pthread_values->max_length = max_length;
-		Pthread_values->offset = temp_prior;
-		Pthread_values->orig_file_size = orig_file_size;
-		size_t inout_size = strnlen_s(inout_address, MAX_OUTPUT_STR_LENGTH);
-		Pthread_values->inout_address = (char*)malloc((inout_size + 1) * sizeof(char));
-		strcpy_s(Pthread_values->inout_address, inout_size + 1, inout_address);
-		HANDLE p_thread_handles = CreateThread(
+static DWORD create_threads(int max_length, node* prior_queue, int num_of_threads) {
+	lock* p_lock = InitializLock(num_of_threads); //initialze the lock
+	Pthread_relevant_values Pthread_values[MAX_THREADS]; //array of thread_relevant_values for the createthread function
+	HANDLE p_thread_handles[MAX_THREADS];	//handles to threads
+	DWORD p_thread_ids[MAX_THREADS];	//handels to threads ids
+	for (int i = 0; i < num_of_threads; i++) {
+		Pthread_values[i] = (Pthread_relevant_values)malloc(sizeof(thread_relevant_values));//allocate memory for thread_values[i]
+		Pthread_values[i]->priority_queue = prior_queue; //same queue for all the threads.
+		Pthread_values[i]->inout_file = open_inout_handle_read_per(inout_file_address); //same file name for everythread
+		Pthread_values[i]->max_length = max_length;
+		Pthread_values[i]->lock_t = p_lock;
+//		DWORD orig_file_size = get_file_orig_size(Pthread_values[i]->inout_file);
+		p_thread_handles[i] = CreateThread(
 			NULL,                   // default security attributes
 			0,                      // use default stack size  
 			write_output_file_per_thread,       // thread function name
-			Pthread_values,          // argument to thread function 
+			Pthread_values[i],          // argument to thread function 
 			0,                      // use default creation flags 
-			&p_thread_ids);   // returns the thread identifier
-		if (p_thread_handles == NULL) {
+			&p_thread_ids[i]);   // returns the thread identifier
+		if (p_thread_handles[i] == NULL) {
 			printf("Couldn't create thread number, error code %d\n", GetLastError());
 			//NEED TO DO THINGS YCARMI
 		}
-		DWORD ret_val = WaitForSingleObject(p_thread_handles, MAX_TIME_PER_THREAD);
-		if (ret_val != WAIT_OBJECT_0) {
-			printf("error occur...\n");
-			//need to do things and etc. ycarmi! 
-		}
 	}
+	DWORD wait_code = WaitForMultipleObjects(num_of_threads, p_thread_handles, TRUE, MAX_TIME_PER_THREAD);
+	if (wait_code != WAIT_OBJECT_0) {
+	}
+	for (int i = 0; i < num_of_threads; i++) {
+		DWORD error_status = CloseHandle(p_thread_handles[i]);
+		if (error_status == 0)
+		{
+			printf("close handle failed! continue to try close other handles if exist\n");
+		}
+		free(Pthread_values[i]);
+	}
+	
 }
 
 
 //Command line inputs: missions file, priority file, number of missions(equal to number of lines in the input files), number of threads.
 int main(int argc, char* argv[])
 {
+	if (strcpy_s(inout_file_address, MAX_OUTPUT_STR_LENGTH, argv[1])) {
+		printf("failed to copy the file path, exit\n ");
+		exit(1);
+	}
+	
 	FILE* fptr_tasks;
 	FILE* fptr_priorities;
 	node* prior_queue;
@@ -277,16 +293,18 @@ int main(int argc, char* argv[])
 		i++;
 		temp_char = argv[4][i];
 	}
-	int* bytes_per_task = (int*)malloc((num_of_tasks + 2) * sizeof(int));
-	if (NULL == bytes_per_task) {
+	//int* bytes_per_task = (int*)malloc((num_of_tasks + 2) * sizeof(int));
+
+	/*if (NULL == bytes_per_task) {
 		printf("failed to allocate memory to int array within main. exit\n");
 		fclose(fptr_priorities);
 		fclose(fptr_tasks);
 		return ERROR_CODE;
-	}
-	int max_length = count_bytes_per_task(bytes_per_task, fptr_tasks); //fptr_tasks closed within the function.
-	free(bytes_per_task); //think its uneccesarry
+	}*/
+	//int bytes_per_task[5] = { 19, 10, 8, 17, 9 };
+	int max_length = count_bytes_per_task(fptr_tasks); //fptr_tasks closed within the function.
+   //free(bytes_per_task); //think its uneccesarry
 	prior_queue = read_priorities_and_create_queue(fptr_priorities);
 	fclose(fptr_priorities); //Priorities are already witihn the queue.
-	create_threads(max_length, argv[1], prior_queue, num_of_threads);
+	create_threads(max_length, prior_queue, num_of_threads);
 }

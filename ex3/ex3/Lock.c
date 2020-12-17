@@ -113,7 +113,7 @@ void read_release(lock* lock) {
 		return ERROR_CODE;
 	}
 	lock->activeReaders = lock->activeReaders - 1;
-	if (lock->activeReaders = 0) {
+	if (lock->activeReaders == 0) {
 		ret_val = ReleaseSemaphore(lock->roomEmpty, 1, &previous_count);
 		if (FALSE == ret_val)
 		{
