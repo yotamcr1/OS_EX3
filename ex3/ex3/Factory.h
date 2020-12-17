@@ -18,6 +18,7 @@
 #define MAX_THREADS 64
 #define MAX_NUM_BYTE 10
 #define DECIMAL_BASE 10
+#define TIMEOUT 10 // have to check it again
 
 //struct declaration
 /*
@@ -33,7 +34,23 @@ typedef struct node {
 	struct node* next;
 }node;
 
+typedef struct lock {
+	int activeReaders;
+	HANDLE Mutex; //mutex
+	HANDLE turnstile;//mutex
+	HANDLE roomEmpty; //semaphore
+}lock;
 
+//lock functions:
+lock* InitializLock(int num_of_threads);
+lock* allocate_place_for_lock(HANDLE mutex, HANDLE turnstile, HANDLE roomEmpty);
+void read_lock(lock* lock);
+void read_release(lock* lock);
+void write_lock(lock* lock);
+void write_release(lock* lock);
+void DestroyLock(lock* lock);
+
+//factory functions:
 int* decompose_into_primary_numbers(int number, int* num_of_primary_numbers);
 char* format_output_string(int* primary_numbers, int number, int num_of_primary_numbers);
 int compare(const void * a, const void * b);
@@ -49,4 +66,7 @@ node* Pop(node* queue);
 node* Push(node* queue, int offset);
 bool Empty(node* queue);
 node* DestroyQueue(node* queue);
+
+
+
 #endif
