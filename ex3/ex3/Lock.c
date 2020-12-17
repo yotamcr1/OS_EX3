@@ -187,7 +187,6 @@ void DestroyLock(lock* lock) {
 
 
 
-
 /*maybe replace all the errors with:
 static void ReportErrorAndEndProgram()
 {
