@@ -140,6 +140,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Factory.c" />
+    <ClCompile Include="Lock.c" />
     <ClCompile Include="Queue.c" />
   </ItemGroup>
   <ItemGroup>
