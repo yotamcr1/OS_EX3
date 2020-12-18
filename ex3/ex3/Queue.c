@@ -38,8 +38,8 @@ node* Pop(node* queue) {
 		return NULL;
 	node* temp_queue = queue;
 	queue = queue->next;//this line ensures that all thread will have the same pointer!
-	return temp_queue;
-	
+	return temp_queue; 
+	//needs to free the return values!!!!
 }
 
 //the function add an element to the end of the queue

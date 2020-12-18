@@ -187,6 +187,7 @@ static DWORD WINAPI write_output_file_per_thread(LPVOID lpParam) {
 					number_to_devide = number_to_devide * 10 + (str_buffer[i] - '0'); //calculate the number related to the mission file
 				}
 			}
+			
 		}
 		else {
 			printf("Can't read the file within the write_output_file_per_thread function\n");
@@ -199,21 +200,21 @@ static DWORD WINAPI write_output_file_per_thread(LPVOID lpParam) {
 		qsort(array_of_div, array_length, sizeof(int), compare);
 		char* output_str = format_output_string(array_of_div, number_to_devide, array_length);
 		size_t output_size = strnlen_s(output_str, MAX_OUTPUT_STR_LENGTH);
-		HANDLE inout_write_per = open_inout_handle_write_per(inout_file_address);
+	//	HANDLE inout_write_per = open_inout_handle_write_per(inout_file_address);
 		write_lock(val->lock_t);
 		DWORD orig_file_size = get_file_orig_size(val->inout_file); //the size always changed because we write to it, so this line in the safe place
 		return_val = SetFilePointer(
-			inout_write_per, //inout file handle
+			val->inout_file, //inout file handle
 			(int)orig_file_size, //offset from the start
 			NULL, //assume there is no 32 high bits to move
 			FILE_BEGIN //offset from the start of the file
 		);
-		if (!WriteFile(inout_write_per, output_str, output_size, &dwBytesWrite, NULL)) {
+		if (!WriteFile(val->inout_file , output_str, output_size, &dwBytesWrite, NULL)) {
 			printf("error while trying to write into the output file. exit\n");
 			//need to do thinggggggs ycarmi
 		}
 		write_release(val->lock_t);
-		CloseHandle(inout_write_per);
+		CloseHandle(val->inout_file);
 	}
 }
 
@@ -252,6 +253,7 @@ static DWORD create_threads(int max_length, node* prior_queue, int num_of_thread
 		}
 		free(Pthread_values[i]);
 	}
+	DestroyLock(p_lock);
 	
 }
 
