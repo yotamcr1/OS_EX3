@@ -23,9 +23,9 @@ node* allocate_place_for_node(int offset) {
 //input: pointer to queue struct
 //output: the offset of the first element in the queue
 
-int Top(node* queue) {
-	if(!Empty(queue))
-		return queue->offset_in_bytes;
+int Top(/*node* queue*/ queue_pointer* pq) {
+	if(!Empty(/*queue*/ pq->pq_head_node))
+		return /*queue->offset_in_bytes*/ pq->pq_head_node->offset_in_bytes;
 	return ERROR_CODE;
 }
 
@@ -33,37 +33,44 @@ int Top(node* queue) {
 //the function remove the first element from the queue
 //input: pointe to the queue struct
 //output: pointer to the second element in the queue (the queue without the first element)
-node* Pop(node* queue) {
-	if (NULL == queue)
+node* Pop(/*node* queue*/ queue_pointer* pq) {
+	if (NULL == /*queue*/ pq->pq_head_node)
 		return NULL;
+	node* temp_queue = pq->pq_head_node;
+	pq->pq_head_node = pq->pq_head_node->next;//this line ensures that all thread will have the same pointer!
+	return temp_queue; 
+	/*
+	if (NULL == queue)
+	return NULL;
 	node* temp_queue = queue;
 	queue = queue->next;//this line ensures that all thread will have the same pointer!
-	return temp_queue; 
+	return temp_queue;
+	*/
 	//needs to free the return values!!!!
 }
 
 //the function add an element to the end of the queue
 //input: pointer to the queue struct
 //output: pointer to the new queue with the new element in the end of it
-node* Push(node* queue, int offset) {
+node* Push(queue_pointer* pq, int offset) {
 	node* new_node = allocate_place_for_node(offset);
-	if (queue == NULL) //if queue wasn't initialize
+	if (Empty(pq->pq_head_node)) //if queue wasn't initialize
 		return new_node;
 	else {
-		node* temp_node = queue;
+		node* temp_node = pq->pq_head_node;
 		while (temp_node->next != NULL) {
 			temp_node = temp_node->next;
 		}
 		temp_node->next = new_node;
-		return queue;
+		return pq->pq_head_node;
 	}
 }
 
 //the function return true if the queue is empty and false otherwise
 //input: pointer to the queue struct
 //output: TRUE if the queue is empty and FALSE if its not
-bool Empty(node* queue) {
-	if (queue == NULL)
+bool Empty(queue_pointer* pq) {
+	if (pq->pq_head_node == NULL)
 		return true;
 	return false;
 }
@@ -72,26 +79,26 @@ bool Empty(node* queue) {
 //the function free all hte resources 
 //input: pointer to the queue struct
 //output: pointer to NULL 
-node* DestroyQueue(node* queue) {
+node* DestroyQueue(queue_pointer* pq) {
 	node* temp_node;
-	while (queue->next != NULL) {
-		temp_node = queue;
-		queue = queue->next;
+	while (pq->pq_head_node->next != NULL) {
+		temp_node = pq->pq_head_node;
+		pq->pq_head_node = pq->pq_head_node->next;
 		free(temp_node);
 	}
-	queue = NULL;
-	return queue;
+	pq->pq_head_node = NULL;
+	return pq->pq_head_node;
 }
 
 //this function is only for us to check our queue functions
-void PrintQueue(node* queue)
+void PrintQueue(queue_pointer* pq)
 {
 	printf("[");
-	while (queue != NULL) {
-		printf("%d", queue->offset_in_bytes);
-		if (queue->next != NULL)
+	while (pq->pq_head_node != NULL) {
+		printf("%d", pq->pq_head_node->offset_in_bytes);
+		if (pq->pq_head_node->next != NULL)
 			printf(", ");
-		queue = queue->next;
+		pq->pq_head_node = pq->pq_head_node->next;
 	}
 	printf("]\n");
 }

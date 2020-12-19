@@ -68,27 +68,29 @@ char* format_output_string(int* primary_numbers, int number, int num_of_primary_
 //the function create queue with the priorities from the priorities file
 //
 //
-node* read_priorities_and_create_queue(FILE* fptr) {
+queue_pointer* read_priorities_and_create_queue(FILE* fptr) {
+	queue_pointer* pq = (queue_pointer*)malloc(sizeof(queue_pointer));
+	pq->pq_head_node = NULL;
 	char task[MAX_TASK_LEN];
 	char c;
 	int i = 0, curr_offset;
-	node* queue = NULL;
+	//node* queue = NULL;
 	for (c = getc(fptr); c != EOF; c = getc(fptr)) {
 		task[i] = c;
 		if (c == '\n') {
 			task[i] = '\0';
 			curr_offset = atoi(task);
-			if (queue == NULL) {
-				queue = InitializeQueue(curr_offset);
+			if (pq->pq_head_node == NULL) {
+				pq->pq_head_node = InitializeQueue(curr_offset);
 			}
 			else
-				queue = Push(queue, curr_offset);
+				pq->pq_head_node = Push(pq, curr_offset);
 			i = 0;
 		}
 		else
 			i++;
 	}
-	return queue;
+	return pq;
 }
 
 //we should  check if its necessary to calculate the absoulut values of the offsets. 
@@ -113,7 +115,7 @@ int count_bytes_per_task(/*int* bytes_per_task,*/ FILE* fptr) {
 	return max_length;
 }
 
-HANDLE open_inout_handle_read_per(char* inout_address) {
+HANDLE open_inout_handle_read_write(char* inout_address) {
 	HANDLE inout_file;
 	inout_file = CreateFileA(
 		inout_address,
@@ -128,23 +130,6 @@ HANDLE open_inout_handle_read_per(char* inout_address) {
 		/// neeeeed to do things here
 	}
 	return inout_file;
-}
-HANDLE open_inout_handle_write_per(char* inout_address) {
-	HANDLE inout_file_wr;
-	inout_file_wr = CreateFileA(
-		inout_address,
-		GENERIC_READ | GENERIC_WRITE, //Open file with write read
-		FILE_SHARE_WRITE | FILE_SHARE_READ, //the file should be shared by the threads.
-		NULL, //default security mode
-		OPEN_ALWAYS, //The files are already created, so files are exist.
-		FILE_ATTRIBUTE_NORMAL, //normal attribute
-		NULL);//not relevant for open file operations. 
-	if (inout_file_wr == INVALID_HANDLE_VALUE) {
-		printf("Can't open the file for read within open_inout_handle_write_per func .\n");
-		exit(1);
-		/// neeeeed to do things heree
-	}
-	return inout_file_wr;
 }
 
 DWORD get_file_orig_size(HANDLE inout_file) {
@@ -164,9 +149,13 @@ static DWORD WINAPI write_output_file_per_thread(LPVOID lpParam) {
 	DWORD dwBytesRead = 0, dwBytesWrite = 0;
 	//Every thread will execute tasks from the input file until the queue will be empty. 
 	//Pop from queue must be within the critical regions, as well as write.
-	while (!Empty(val->priority_queue)) {
+	while (!Empty(val->p_q_head)) {
 		read_lock(val->lock_t);
-		node* current = Pop(val->priority_queue); // the first element within the queue step forward in all threads. current is previues first element.
+		printf("the queue before pop");
+		PrintQueue(val->p_q_head);
+		node* current = Pop(val->p_q_head); // the first element within the queue step forward in all threads. current is previues first element.
+		printf("the queue after pop");
+		PrintQueue(val->p_q_head);
 		offset = current->offset_in_bytes;
 		//free(current); we should close it but its trigger en error, i don't know why!!!
 		DWORD return_val = SetFilePointer(
@@ -218,15 +207,15 @@ static DWORD WINAPI write_output_file_per_thread(LPVOID lpParam) {
 	}
 }
 
-static DWORD create_threads(int max_length, node* prior_queue, int num_of_threads) {
+static DWORD create_threads(int max_length, queue_pointer* q_head, int num_of_threads) {
 	lock* p_lock = InitializLock(num_of_threads); //initialze the lock
 	Pthread_relevant_values Pthread_values[MAX_THREADS]; //array of thread_relevant_values for the createthread function
 	HANDLE p_thread_handles[MAX_THREADS];	//handles to threads
 	DWORD p_thread_ids[MAX_THREADS];	//handels to threads ids
 	for (int i = 0; i < num_of_threads; i++) {
 		Pthread_values[i] = (Pthread_relevant_values)malloc(sizeof(thread_relevant_values));//allocate memory for thread_values[i]
-		Pthread_values[i]->priority_queue = prior_queue; //same queue for all the threads.
-		Pthread_values[i]->inout_file = open_inout_handle_read_per(inout_file_address); //same file name for everythread
+		Pthread_values[i]->p_q_head = q_head; //same queue for all the threads.
+		Pthread_values[i]->inout_file =open_inout_handle_read_write(inout_file_address); //same file name for everythread
 		Pthread_values[i]->max_length = max_length;
 		Pthread_values[i]->lock_t = p_lock;
 //		DWORD orig_file_size = get_file_orig_size(Pthread_values[i]->inout_file);
@@ -257,6 +246,10 @@ static DWORD create_threads(int max_length, node* prior_queue, int num_of_thread
 	
 }
 
+
+//TODO:
+//CHECK ARGUEMNTS FUNCTION
+//
 
 //Command line inputs: missions file, priority file, number of missions(equal to number of lines in the input files), number of threads.
 int main(int argc, char* argv[])
@@ -295,18 +288,9 @@ int main(int argc, char* argv[])
 		i++;
 		temp_char = argv[4][i];
 	}
-	//int* bytes_per_task = (int*)malloc((num_of_tasks + 2) * sizeof(int));
-
-	/*if (NULL == bytes_per_task) {
-		printf("failed to allocate memory to int array within main. exit\n");
-		fclose(fptr_priorities);
-		fclose(fptr_tasks);
-		return ERROR_CODE;
-	}*/
-	//int bytes_per_task[5] = { 19, 10, 8, 17, 9 };
 	int max_length = count_bytes_per_task(fptr_tasks); //fptr_tasks closed within the function.
-   //free(bytes_per_task); //think its uneccesarry
-	prior_queue = read_priorities_and_create_queue(fptr_priorities);
+	queue_pointer* p_q = (queue_pointer*)malloc(sizeof(queue_pointer));
+	p_q = read_priorities_and_create_queue(fptr_priorities);
 	fclose(fptr_priorities); //Priorities are already witihn the queue.
-	create_threads(max_length, prior_queue, num_of_threads);
+	create_threads(max_length, p_q, num_of_threads);
 }

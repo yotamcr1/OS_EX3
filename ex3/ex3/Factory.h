@@ -12,14 +12,14 @@
 
 #define ERROR_CODE ((int)(-1))
 #define MAX_TASK_LEN 9
-#define MAX_TIME_PER_THREAD 10000
+#define MAX_TIME_PER_THREAD 100000
 #define MAX_PRIMARY_NUMBERS 30
 #define MAX_PRIMARY_NUMBERS_ARRAY 90
 #define MAX_OUTPUT_STR_LENGTH 126
 #define MAX_THREADS 64
 #define MAX_NUM_BYTE 10
 #define DECIMAL_BASE 10
-#define TIMEOUT 10 // have to check it again
+#define TIMEOUT 1000 // have to check it again
 
 
 //Global Variable Decleration of Factory.c:
@@ -40,6 +40,10 @@ typedef struct node {
 	struct node* next;
 }node;
 
+typedef struct queue_pointer {
+	node* pq_head_node;
+}queue_pointer;
+
 typedef struct lock {
 	int activeReaders;
 	HANDLE Mutex; //mutex
@@ -49,7 +53,7 @@ typedef struct lock {
 
 typedef struct t {
 	HANDLE inout_file;
-	node* priority_queue;
+	queue_pointer* p_q_head;
 	lock* lock_t;
 	int max_length;
 
@@ -69,18 +73,18 @@ void DestroyLock(lock* lock);
 int* decompose_into_primary_numbers(int number, int* num_of_primary_numbers);
 char* format_output_string(int* primary_numbers, int number, int num_of_primary_numbers);
 int compare(const void * a, const void * b);
-int count_bytes_per_task(int* bytes_per_task, FILE* fptr);
-node* read_priorities_and_create_queue(FILE* fptr);
+int count_bytes_per_task(/*int* bytes_per_task, */FILE* fptr);
+queue_pointer* read_priorities_and_create_queue(FILE* fptr);
 
 //queue functions:
 
 node* allocate_place_for_node(int offset);
-int Top(node* queue);
+int Top(queue_pointer* pq);
 node* InitializeQueue(int offset);
-node* Pop(node* queue);
-node* Push(node* queue, int offset);
-bool Empty(node* queue);
-node* DestroyQueue(node* queue);
+node* Pop(queue_pointer* pq);
+node* Push(queue_pointer* pq, int offset);
+bool Empty(queue_pointer* pq);
+node* DestroyQueue(queue_pointer* pq);
 
 
 
