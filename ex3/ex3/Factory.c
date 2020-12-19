@@ -145,32 +145,47 @@ DWORD get_file_orig_size(HANDLE inout_file) {
 // pop first mission, read the relevant lines from the current place, call, synchronzie  
 static DWORD WINAPI write_output_file_per_thread(LPVOID lpParam) {
 	Pthread_relevant_values val = (Pthread_relevant_values)lpParam;
-	int offset = 0, number_to_devide = 0;
-	DWORD dwBytesRead = 0, dwBytesWrite = 0;
+	int offset = 0, number_to_devide = 0,last_offset = 0;
+	DWORD dwBytesRead = 0, dwBytesWrite = 0,return_val = 0;
 	//Every thread will execute tasks from the input file until the queue will be empty. 
 	//Pop from queue must be within the critical regions, as well as write.
 	while (!Empty(val->p_q_head)) {
 		read_lock(val->lock_t);
 		printf("the queue before pop");
 		PrintQueue(val->p_q_head);
-		node* current = Pop(val->p_q_head); // the first element within the queue step forward in all threads. current is previues first element.
-		printf("the queue after pop");
+		last_offset = offset;
+		offset = Top(val->p_q_head);
+		Pop(val->p_q_head); // the first element within the queue step forward in all threads. current is previues first element.
+		printf("the queue after pop, offset = %d",offset);
 		PrintQueue(val->p_q_head);
-		offset = current->offset_in_bytes;
 		//free(current); we should close it but its trigger en error, i don't know why!!!
-		DWORD return_val = SetFilePointer(
-			val->inout_file, //inout file handle
-			offset, //offset from the start
-			NULL, //assume there is no 32 high bits to move
-			FILE_BEGIN //offset from the start of the file
-		);
+		if (offset != 0) {
+			return_val = SetFilePointer(
+				val->inout_file, //inout file handle
+				offset, //offset from the start
+				NULL, //assume there is no 32 high bits to move
+				FILE_BEGIN //offset from the start of the file
+			);
+
+		}
+		else
+		{
+			return_val = SetFilePointer(
+				val->inout_file, //inout file handle
+				/*(-1*last_offset)*/0, //offset from the start
+				NULL, //assume there is no 32 high bits to move
+				/*FILE_CURRENT*/FILE_END //offset from the start of the file
+			);
+		}
 		if (return_val == INVALID_SET_FILE_POINTER) {
 			printf("cannot set file pointer within write ouput file per thread function. exit\n");
 			exit(1);
 			//should close here everything. sorry hen about the balagan!!
 		}
+
 		char* str_buffer = (char*)malloc((val->max_length + 1) * sizeof(char));
 		if (ReadFile(val->inout_file, str_buffer, val->max_length, &dwBytesRead, NULL)) {
+			printf("str - %s", str_buffer);
 			for (int i = 0; i < dwBytesRead && str_buffer[i] != '\r'; i++) {
 				if ((str_buffer[i] >= 48 && str_buffer[i] <= 57)) { //check if the char is a number 
 					number_to_devide = number_to_devide * 10 + (str_buffer[i] - '0'); //calculate the number related to the mission file
@@ -183,6 +198,7 @@ static DWORD WINAPI write_output_file_per_thread(LPVOID lpParam) {
 			//need to do things ycarmi
 		}
 		read_release(val->lock_t);
+		printf("number to devide - %d\n", number_to_devide);
 
 		int array_length;
 		int* array_of_div = decompose_into_primary_numbers(number_to_devide, &array_length);
@@ -209,6 +225,7 @@ static DWORD WINAPI write_output_file_per_thread(LPVOID lpParam) {
 
 static DWORD create_threads(int max_length, queue_pointer* q_head, int num_of_threads) {
 	lock* p_lock = InitializLock(num_of_threads); //initialze the lock
+	lock* priority_lock = InitializLock(num_of_threads);
 	Pthread_relevant_values Pthread_values[MAX_THREADS]; //array of thread_relevant_values for the createthread function
 	HANDLE p_thread_handles[MAX_THREADS];	//handles to threads
 	DWORD p_thread_ids[MAX_THREADS];	//handels to threads ids
@@ -218,6 +235,7 @@ static DWORD create_threads(int max_length, queue_pointer* q_head, int num_of_th
 		Pthread_values[i]->inout_file =open_inout_handle_read_write(inout_file_address); //same file name for everythread
 		Pthread_values[i]->max_length = max_length;
 		Pthread_values[i]->lock_t = p_lock;
+		Pthread_values[i]->priority_lock = priority_lock;
 //		DWORD orig_file_size = get_file_orig_size(Pthread_values[i]->inout_file);
 		p_thread_handles[i] = CreateThread(
 			NULL,                   // default security attributes
@@ -231,7 +249,7 @@ static DWORD create_threads(int max_length, queue_pointer* q_head, int num_of_th
 			//NEED TO DO THINGS YCARMI
 		}
 	}
-	DWORD wait_code = WaitForMultipleObjects(num_of_threads, p_thread_handles, TRUE, MAX_TIME_PER_THREAD);
+	DWORD wait_code = WaitForMultipleObjects(num_of_threads, p_thread_handles, TRUE, TIMEOUT);
 	if (wait_code != WAIT_OBJECT_0) {
 	}
 	for (int i = 0; i < num_of_threads; i++) {

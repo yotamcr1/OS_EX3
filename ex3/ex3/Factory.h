@@ -19,7 +19,7 @@
 #define MAX_THREADS 64
 #define MAX_NUM_BYTE 10
 #define DECIMAL_BASE 10
-#define TIMEOUT 1000 // have to check it again
+#define TIMEOUT 100000000 // have to check it again
 
 
 //Global Variable Decleration of Factory.c:
@@ -54,6 +54,7 @@ typedef struct lock {
 typedef struct t {
 	HANDLE inout_file;
 	queue_pointer* p_q_head;
+	lock* priority_lock;
 	lock* lock_t;
 	int max_length;
 
@@ -81,7 +82,7 @@ queue_pointer* read_priorities_and_create_queue(FILE* fptr);
 node* allocate_place_for_node(int offset);
 int Top(queue_pointer* pq);
 node* InitializeQueue(int offset);
-node* Pop(queue_pointer* pq);
+void Pop(queue_pointer* pq);
 node* Push(queue_pointer* pq, int offset);
 bool Empty(queue_pointer* pq);
 node* DestroyQueue(queue_pointer* pq);
