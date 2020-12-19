@@ -74,7 +74,7 @@ void DestroyLock(lock* lock);
 int* decompose_into_primary_numbers(int number, int* num_of_primary_numbers);
 char* format_output_string(int* primary_numbers, int number, int num_of_primary_numbers);
 int compare(const void * a, const void * b);
-int count_bytes_per_task(/*int* bytes_per_task, */FILE* fptr);
+int calculate_max_line(FILE* fptr);
 queue_pointer* read_priorities_and_create_queue(FILE* fptr);
 
 //queue functions:

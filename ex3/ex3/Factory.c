@@ -68,13 +68,11 @@ char* format_output_string(int* primary_numbers, int number, int num_of_primary_
 //
 //
 queue_pointer* read_priorities_and_create_queue(FILE* fptr) {
-	//queue_pointer* pq = (queue_pointer*)malloc(sizeof(queue_pointer));
 	queue_pointer* pq = InitializeQueue();
 	pq->pq_head_node = NULL;
 	char task[MAX_TASK_LEN];
 	char c;
 	int i = 0, curr_offset;
-	//node* queue = NULL;
 	for (c = getc(fptr); c != EOF; c = getc(fptr)) {
 		task[i] = c;
 		if (c == '\n') {
@@ -89,13 +87,11 @@ queue_pointer* read_priorities_and_create_queue(FILE* fptr) {
 	return pq;
 }
 
-//we should  check if its necessary to calculate the absoulut values of the offsets. 
-int count_bytes_per_task(/*int* bytes_per_task,*/ FILE* fptr) {
+int calculate_max_line( FILE* fptr) {
 	int char_count = 0;
 	int max_length = 1;
 	int index = 0;
 	char c;
-	//bytes_per_task[index] = char_count;
 	index++;
 	for (c = getc(fptr); c != EOF; c = getc(fptr)) {
 		char_count++;
@@ -103,7 +99,6 @@ int count_bytes_per_task(/*int* bytes_per_task,*/ FILE* fptr) {
 			char_count++; // \n is 2 chars in read_file function
 			if (max_length < char_count)
 				max_length = char_count;
-		//	bytes_per_task[index] = char_count;
 			index++;
 		}
 	}
@@ -154,7 +149,6 @@ static DWORD WINAPI write_output_file_per_thread(LPVOID lpParam) {
 		Pop(val->p_q_head); // the first element within the queue step forward in all threads. current is previues first element.
 		printf("the queue after pop, offset = %d",offset);
 		PrintQueue(val->p_q_head);
-		//if (offset != 0) {
 			return_val = SetFilePointer(
 				val->inout_file, //inout file handle
 				offset, //offset from the start
@@ -162,11 +156,13 @@ static DWORD WINAPI write_output_file_per_thread(LPVOID lpParam) {
 				FILE_BEGIN //offset from the start of the file
 			);
 
-	//	}
 		if (return_val == INVALID_SET_FILE_POINTER) {
 			printf("cannot set file pointer within write ouput file per thread function. exit\n");
+			//not sure it is enopgh to close!
+			DestroyQueue(val->p_q_head);
+			free(val);
 			exit(1);
-			//should close here everything. sorry hen about the balagan!!
+			// end of comment
 		}
 
 		char* str_buffer = (char*)malloc((val->max_length + 1) * sizeof(char));
@@ -182,17 +178,20 @@ static DWORD WINAPI write_output_file_per_thread(LPVOID lpParam) {
 		}
 		else {
 			printf("Can't read the file within the write_output_file_per_thread function\n");
-			//need to do things ycarmi
+			//not sure it is enopgh to close!
+			DestroyQueue(val->p_q_head);
+			free(val);
+			exit(1);
+			// end of comment
 		}
+		free(str_buffer);
 		read_release(val->lock_t);
-		//printf("number to devide - %d\n", number_to_devide);
 
 		int array_length;
 		int* array_of_div = decompose_into_primary_numbers(number_to_devide, &array_length);
 		qsort(array_of_div, array_length, sizeof(int), compare);
 		char* output_str = format_output_string(array_of_div, number_to_devide, array_length);
 		size_t output_size = strnlen_s(output_str, MAX_OUTPUT_STR_LENGTH);
-	//	HANDLE inout_write_per = open_inout_handle_write_per(inout_file_address);
 		write_lock(val->lock_t);
 		DWORD orig_file_size = get_file_orig_size(val->inout_file); //the size always changed because we write to it, so this line in the safe place
 		return_val = SetFilePointer(
@@ -203,11 +202,24 @@ static DWORD WINAPI write_output_file_per_thread(LPVOID lpParam) {
 		);
 		if (!WriteFile(val->inout_file , output_str, output_size, &dwBytesWrite, NULL)) {
 			printf("error while trying to write into the output file. exit\n");
-			//need to do thinggggggs ycarmi
+			//not sure it is enopgh to close!
+			DestroyQueue(val->p_q_head);
+			free(val);
+			exit(1);
+			// end of comment
 		}
 		write_release(val->lock_t);
+		free(array_of_div); 
+		free(output_str);
 	}
 	CloseHandle(val->inout_file);
+}
+
+void kill_the_program_and_die(lock* p_lock, lock* prior_lock, Pthread_relevant_values* Pthread_values, queue_pointer* pq /*TBD ADD EVERYTHING*/)
+{
+	//ALL THE CLOSE SHOULD BE HERE!!!! 
+	DestroyLock(p_lock);
+	DestroyLock(prior_lock);
 }
 
 static DWORD create_threads(int max_length, queue_pointer* q_head, int num_of_threads) {
@@ -232,7 +244,15 @@ static DWORD create_threads(int max_length, queue_pointer* q_head, int num_of_th
 			&p_thread_ids[i]);   // returns the thread identifier
 		if (p_thread_handles[i] == NULL) {
 			printf("Couldn't create thread number, error code %d\n", GetLastError());
-			//NEED TO DO THINGS YCARMI
+			//not sure if it is everything!!!!
+			for (int j = 0; j < i; j++) {
+				CloseHandle(Pthread_values[i]->inout_file);
+				CloseHandle(Pthread_values[i]);
+				DestroyLock(p_lock);
+				DestroyLock(priority_lock);
+			}
+			exit(1);
+			//end of comment 
 		}
 	}
 	DWORD wait_code = WaitForMultipleObjects(num_of_threads, p_thread_handles, TRUE, TIMEOUT);
@@ -249,11 +269,6 @@ static DWORD create_threads(int max_length, queue_pointer* q_head, int num_of_th
 	DestroyLock(p_lock);
 	
 }
-
-
-//TODO:
-//CHECK ARGUEMNTS FUNCTION
-//
 
 void Initialize_global_file_path(char* inout_file_address, char* file_path) {
 
@@ -286,13 +301,12 @@ int main(int argc, char* argv[])
 		exit(1);
 	}
 	int is_open_priorities = fopen_s(&fptr_priorities, argv[2], "r");
-
 	if (NULL == fptr_priorities || is_open_priorities != 0) {
 		printf("Can't open the priorities input file \n");
 		fclose(fptr_tasks);
 		exit(1);
 	}
-		while (temp_char != '\0') { //Translate number of tasks from string to integer
+	while (temp_char != '\0') { //Translate number of tasks from string to integer
 		num_of_tasks = num_of_tasks * 10 + (temp_char - '0');
 		i++;
 		temp_char = argv[3][i];
@@ -304,9 +318,14 @@ int main(int argc, char* argv[])
 		i++;
 		temp_char = argv[4][i];
 	}
-	int max_length = count_bytes_per_task(fptr_tasks); //fptr_tasks closed within the function.
-	queue_pointer* p_q;
-	p_q = read_priorities_and_create_queue(fptr_priorities);
+	if (num_of_threads <= 0 || num_of_tasks <= 0) {
+		printf("Number of threads or number of tasks is zero or negative nubmer, which breaks the rules of the program. exit\n");
+		fclose(fptr_priorities);
+		fclose(fptr_tasks);
+		exit(1);
+	}
+	int max_length = calculate_max_line(fptr_tasks); //fptr_tasks closed within the function.
+	queue_pointer* p_q = read_priorities_and_create_queue(fptr_priorities);
 	fclose(fptr_priorities); //Priorities are already witihn the queue.
 	create_threads(max_length, p_q, num_of_threads);
 }
