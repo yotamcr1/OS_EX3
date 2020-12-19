@@ -6,7 +6,6 @@ int compare(const void* a, const void* b)
 	return (*(int*)a - *(int*)b);
 }
 
-
 int* decompose_into_primary_numbers(int number, int* num_of_primary_numbers) {
 	int* primary_numbers_local = (int*)malloc(2 * (ceil(sqrt(number)) + 1) * sizeof(int)); //Upper bond for number of divisidor of n is n^0.5 * 2 , we take a little bit more space for it for small n
 	//math proof for that can be find here https://math.stackexchange.com/questions/1053062/upper-limit-for-the-divisor-function
@@ -69,7 +68,8 @@ char* format_output_string(int* primary_numbers, int number, int num_of_primary_
 //
 //
 queue_pointer* read_priorities_and_create_queue(FILE* fptr) {
-	queue_pointer* pq = (queue_pointer*)malloc(sizeof(queue_pointer));
+	//queue_pointer* pq = (queue_pointer*)malloc(sizeof(queue_pointer));
+	queue_pointer* pq = InitializeQueue();
 	pq->pq_head_node = NULL;
 	char task[MAX_TASK_LEN];
 	char c;
@@ -80,10 +80,6 @@ queue_pointer* read_priorities_and_create_queue(FILE* fptr) {
 		if (c == '\n') {
 			task[i] = '\0';
 			curr_offset = atoi(task);
-			if (pq->pq_head_node == NULL) {
-				pq->pq_head_node = InitializeQueue(curr_offset);
-			}
-			else
 				pq->pq_head_node = Push(pq, curr_offset);
 			i = 0;
 		}
@@ -140,7 +136,6 @@ DWORD get_file_orig_size(HANDLE inout_file) {
 		printf("can't calculate origianl size file. exit\n");
 	}
 }
-
 
 // pop first mission, read the relevant lines from the current place, call, synchronzie  
 static DWORD WINAPI write_output_file_per_thread(LPVOID lpParam) {
@@ -211,7 +206,6 @@ static DWORD WINAPI write_output_file_per_thread(LPVOID lpParam) {
 			//need to do thinggggggs ycarmi
 		}
 		write_release(val->lock_t);
-	//	CloseHandle(val->inout_file);
 	}
 	CloseHandle(val->inout_file);
 }
@@ -229,7 +223,6 @@ static DWORD create_threads(int max_length, queue_pointer* q_head, int num_of_th
 		Pthread_values[i]->max_length = max_length;
 		Pthread_values[i]->lock_t = p_lock;
 		Pthread_values[i]->priority_lock = priority_lock;
-//		DWORD orig_file_size = get_file_orig_size(Pthread_values[i]->inout_file);
 		p_thread_handles[i] = CreateThread(
 			NULL,                   // default security attributes
 			0,                      // use default stack size  
@@ -262,32 +255,44 @@ static DWORD create_threads(int max_length, queue_pointer* q_head, int num_of_th
 //CHECK ARGUEMNTS FUNCTION
 //
 
-//Command line inputs: missions file, priority file, number of missions(equal to number of lines in the input files), number of threads.
-int main(int argc, char* argv[])
-{
-	if (strcpy_s(inout_file_address, MAX_OUTPUT_STR_LENGTH, argv[1])) {
+void Initialize_global_file_path(char* inout_file_address, char* file_path) {
+
+	if (strcpy_s(inout_file_address, MAX_OUTPUT_STR_LENGTH, file_path)) {
 		printf("failed to copy the file path, exit\n ");
 		exit(1);
 	}
-	
-	FILE* fptr_tasks;
-	FILE* fptr_priorities;
-	node* prior_queue;
+
+}
+
+
+//Command line inputs: missions file, priority file, number of missions(equal to number of lines in the input files), number of threads.
+int main(int argc, char* argv[])
+{
+	FILE* fptr_tasks = NULL;
+	FILE* fptr_priorities = NULL;
 	int num_of_tasks = 0, num_of_threads = 0, i = 0, num_of_primary_numbers = 0, number_of_chars_within_tasks_file = 0;
 	int temp_prior = 0, temp_task = 0;
-	int is_open_tasks = fopen_s(&fptr_tasks, argv[1], "r");
+	char temp_char = argv[3][0];
+
+	if (argc != 5) {
+		printf("Command line number of inputs incorrect. exit\n");
+		exit(1);
+	}
+
+	Initialize_global_file_path(inout_file_address, argv[1]);
+	int is_open_tasks = fopen_s(&fptr_tasks, inout_file_address, "r");
 	if (NULL == fptr_tasks || is_open_tasks != 0) {
 		printf("Can't open the tasks input file \n");
 		exit(1);
 	}
 	int is_open_priorities = fopen_s(&fptr_priorities, argv[2], "r");
+
 	if (NULL == fptr_priorities || is_open_priorities != 0) {
 		printf("Can't open the priorities input file \n");
 		fclose(fptr_tasks);
 		exit(1);
 	}
-	char temp_char = argv[3][0];
-	while (temp_char != '\0') { //Translate number of tasks from string to integer
+		while (temp_char != '\0') { //Translate number of tasks from string to integer
 		num_of_tasks = num_of_tasks * 10 + (temp_char - '0');
 		i++;
 		temp_char = argv[3][i];
@@ -300,7 +305,7 @@ int main(int argc, char* argv[])
 		temp_char = argv[4][i];
 	}
 	int max_length = count_bytes_per_task(fptr_tasks); //fptr_tasks closed within the function.
-	queue_pointer* p_q = (queue_pointer*)malloc(sizeof(queue_pointer));
+	queue_pointer* p_q;
 	p_q = read_priorities_and_create_queue(fptr_priorities);
 	fclose(fptr_priorities); //Priorities are already witihn the queue.
 	create_threads(max_length, p_q, num_of_threads);

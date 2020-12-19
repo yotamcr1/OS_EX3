@@ -81,11 +81,11 @@ queue_pointer* read_priorities_and_create_queue(FILE* fptr);
 
 node* allocate_place_for_node(int offset);
 int Top(queue_pointer* pq);
-node* InitializeQueue(int offset);
+queue_pointer* InitializeQueue();
 void Pop(queue_pointer* pq);
 node* Push(queue_pointer* pq, int offset);
 bool Empty(queue_pointer* pq);
-node* DestroyQueue(queue_pointer* pq);
+void DestroyQueue(queue_pointer* pq);
 
 
 

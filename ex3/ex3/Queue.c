@@ -1,9 +1,11 @@
 #include "factory.h"
 //all the functions in this module are debuged
 
-node* InitializeQueue(int offset) {//check if we dont need to seperate this from the alocate function
-	node* new_queue = allocate_place_for_node(offset);
-	return new_queue;
+queue_pointer* InitializeQueue(/*int offset*/) {
+	//TBD: queue_pointer should allocate and return here
+	queue_pointer* pq = (queue_pointer*)malloc(sizeof(queue_pointer));
+	/*pq->pq_head_node = allocate_place_for_node(offset);*/
+	return pq;
 }
 
 //the function allocate place for new node in the queue
@@ -23,9 +25,13 @@ node* allocate_place_for_node(int offset) {
 //input: pointer to queue struct
 //output: the offset of the first element in the queue
 
-int Top( queue_pointer* pq) {
+int Top(queue_pointer* pq) {
+	if (NULL == pq) {
+		printf("The pq headr is Null within queue Top function. exit\n");
+		return ERROR_CODE;
+	}
 	if(!Empty(pq))
-		return /*queue->offset_in_bytes*/ pq->pq_head_node->offset_in_bytes;
+		return pq->pq_head_node->offset_in_bytes;
 	return ERROR_CODE;
 }
 
@@ -71,6 +77,10 @@ node* Push(queue_pointer* pq, int offset) {
 //input: pointer to the queue struct
 //output: TRUE if the queue is empty and FALSE if its not
 bool Empty(queue_pointer* pq) {
+	if (NULL == pq) {
+		printf("pq is Null within Empty function. \n");
+		//TBD: return indication? 
+	}
 	if (pq->pq_head_node == NULL)
 		return true;
 	return false;
@@ -80,15 +90,17 @@ bool Empty(queue_pointer* pq) {
 //the function free all hte resources 
 //input: pointer to the queue struct
 //output: pointer to NULL 
-node* DestroyQueue(queue_pointer* pq) {
+void DestroyQueue(queue_pointer* pq) {
 	node* temp_node;
-	while (pq->pq_head_node->next != NULL) {
-		temp_node = pq->pq_head_node;
-		pq->pq_head_node = pq->pq_head_node->next;
-		free(temp_node);
+	if (NULL == pq) {
+		printf("pq is Null within destrot queue\n");
+		return;
 	}
-	pq->pq_head_node = NULL;
-	return pq->pq_head_node;
+	while (!Empty(pq)) {
+		Pop(pq);
+	}
+	free(pq);
+	pq = NULL;
 }
 
 //this function is only for us to check our queue functions
