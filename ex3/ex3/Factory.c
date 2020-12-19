@@ -150,16 +150,16 @@ static DWORD WINAPI write_output_file_per_thread(LPVOID lpParam) {
 	//Every thread will execute tasks from the input file until the queue will be empty. 
 	//Pop from queue must be within the critical regions, as well as write.
 	while (!Empty(val->p_q_head)) {
+		number_to_devide = 0;
 		read_lock(val->lock_t);
 		printf("the queue before pop");
 		PrintQueue(val->p_q_head);
-		last_offset = offset;
+		last_offset = -1*offset;
 		offset = Top(val->p_q_head);
 		Pop(val->p_q_head); // the first element within the queue step forward in all threads. current is previues first element.
 		printf("the queue after pop, offset = %d",offset);
 		PrintQueue(val->p_q_head);
-		//free(current); we should close it but its trigger en error, i don't know why!!!
-		if (offset != 0) {
+		//if (offset != 0) {
 			return_val = SetFilePointer(
 				val->inout_file, //inout file handle
 				offset, //offset from the start
@@ -167,16 +167,7 @@ static DWORD WINAPI write_output_file_per_thread(LPVOID lpParam) {
 				FILE_BEGIN //offset from the start of the file
 			);
 
-		}
-		else
-		{
-			return_val = SetFilePointer(
-				val->inout_file, //inout file handle
-				/*(-1*last_offset)*/0, //offset from the start
-				NULL, //assume there is no 32 high bits to move
-				/*FILE_CURRENT*/FILE_END //offset from the start of the file
-			);
-		}
+	//	}
 		if (return_val == INVALID_SET_FILE_POINTER) {
 			printf("cannot set file pointer within write ouput file per thread function. exit\n");
 			exit(1);
@@ -185,6 +176,7 @@ static DWORD WINAPI write_output_file_per_thread(LPVOID lpParam) {
 
 		char* str_buffer = (char*)malloc((val->max_length + 1) * sizeof(char));
 		if (ReadFile(val->inout_file, str_buffer, val->max_length, &dwBytesRead, NULL)) {
+			str_buffer[dwBytesRead] = '\0';
 			printf("str - %s", str_buffer);
 			for (int i = 0; i < dwBytesRead && str_buffer[i] != '\r'; i++) {
 				if ((str_buffer[i] >= 48 && str_buffer[i] <= 57)) { //check if the char is a number 
@@ -198,7 +190,7 @@ static DWORD WINAPI write_output_file_per_thread(LPVOID lpParam) {
 			//need to do things ycarmi
 		}
 		read_release(val->lock_t);
-		printf("number to devide - %d\n", number_to_devide);
+		//printf("number to devide - %d\n", number_to_devide);
 
 		int array_length;
 		int* array_of_div = decompose_into_primary_numbers(number_to_devide, &array_length);
@@ -219,8 +211,9 @@ static DWORD WINAPI write_output_file_per_thread(LPVOID lpParam) {
 			//need to do thinggggggs ycarmi
 		}
 		write_release(val->lock_t);
-		CloseHandle(val->inout_file);
+	//	CloseHandle(val->inout_file);
 	}
+	CloseHandle(val->inout_file);
 }
 
 static DWORD create_threads(int max_length, queue_pointer* q_head, int num_of_threads) {
