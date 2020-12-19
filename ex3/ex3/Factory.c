@@ -135,18 +135,19 @@ DWORD get_file_orig_size(HANDLE inout_file) {
 // pop first mission, read the relevant lines from the current place, call, synchronzie  
 static DWORD WINAPI write_output_file_per_thread(LPVOID lpParam) {
 	Pthread_relevant_values val = (Pthread_relevant_values)lpParam;
-	int offset = 0, number_to_devide = 0,last_offset = 0;
+	int offset = 0, number_to_devide = 0;
 	DWORD dwBytesRead = 0, dwBytesWrite = 0,return_val = 0;
 	//Every thread will execute tasks from the input file until the queue will be empty. 
 	//Pop from queue must be within the critical regions, as well as write.
 	while (!Empty(val->p_q_head)) {
 		number_to_devide = 0;
+		write_lock(val->priority_lock);
+		offset = Top(val->p_q_head);
+		Pop(val->p_q_head); // the first element within the queue step forward in all threads. current is previues first element.
+		write_release(val->priority_lock);
 		read_lock(val->lock_t);
 		printf("the queue before pop");
 		PrintQueue(val->p_q_head);
-		last_offset = -1*offset;
-		offset = Top(val->p_q_head);
-		Pop(val->p_q_head); // the first element within the queue step forward in all threads. current is previues first element.
 		printf("the queue after pop, offset = %d",offset);
 		PrintQueue(val->p_q_head);
 			return_val = SetFilePointer(
@@ -164,7 +165,6 @@ static DWORD WINAPI write_output_file_per_thread(LPVOID lpParam) {
 			exit(1);
 			// end of comment
 		}
-
 		char* str_buffer = (char*)malloc((val->max_length + 1) * sizeof(char));
 		if (ReadFile(val->inout_file, str_buffer, val->max_length, &dwBytesRead, NULL)) {
 			str_buffer[dwBytesRead] = '\0';
@@ -193,6 +193,7 @@ static DWORD WINAPI write_output_file_per_thread(LPVOID lpParam) {
 		char* output_str = format_output_string(array_of_div, number_to_devide, array_length);
 		size_t output_size = strnlen_s(output_str, MAX_OUTPUT_STR_LENGTH);
 		write_lock(val->lock_t);
+		//checked untill now
 		DWORD orig_file_size = get_file_orig_size(val->inout_file); //the size always changed because we write to it, so this line in the safe place
 		return_val = SetFilePointer(
 			val->inout_file, //inout file handle
@@ -200,6 +201,13 @@ static DWORD WINAPI write_output_file_per_thread(LPVOID lpParam) {
 			NULL, //assume there is no 32 high bits to move
 			FILE_BEGIN //offset from the start of the file
 		);
+		if (return_val == INVALID_SET_FILE_POINTER) {
+			printf("cannot set file to oroginal pointer within write ouput file per thread function. exit\n");
+			CloseHandle(val->inout_file);
+			free(array_of_div);
+			free(output_str);
+			exit(1);
+		}
 		if (!WriteFile(val->inout_file , output_str, output_size, &dwBytesWrite, NULL)) {
 			printf("error while trying to write into the output file. exit\n");
 			//not sure it is enopgh to close!

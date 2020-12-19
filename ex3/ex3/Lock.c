@@ -105,7 +105,6 @@ void read_lock(lock* lock) {
 void read_release(lock* lock) {
 	DWORD wait_code;
 	BOOL ret_val;
-	LONG previous_count;// have to check if initialize here its OK
 	wait_code = WaitForSingleObject(lock->Mutex, TIMEOUT);
 	if (WAIT_OBJECT_0 != wait_code)
 	{
@@ -114,7 +113,7 @@ void read_release(lock* lock) {
 	}
 	lock->activeReaders = lock->activeReaders - 1;
 	if (lock->activeReaders == 0) {
-		ret_val = ReleaseSemaphore(lock->roomEmpty, 1, &previous_count);
+		ret_val = ReleaseSemaphore(lock->roomEmpty, 1, NULL);
 		if (FALSE == ret_val)
 		{
 			printf("Error when releasing roomEmpty\n");
@@ -156,14 +155,13 @@ void write_lock(lock* lock) {
 
 void write_release(lock* lock) {
 	BOOL ret_val;
-	LONG previous_count;
 	ret_val = ReleaseMutex(lock->turnstile);
 	if (FALSE == ret_val)
 	{
 		printf("Error when releasing turnstile\n");
 		return ERROR_CODE;
 	}
-	ret_val = ReleaseSemaphore(lock->roomEmpty, 1, &previous_count);
+	ret_val = ReleaseSemaphore(lock->roomEmpty, 1, NULL);
 	if (FALSE == ret_val)
 	{
 		printf("Error when releasing roomEmpty\n");
