@@ -1,0 +1,72 @@
+811701500
+551032884
+905544010
+625340858
+683450426
+683761552
+542758887
+151988830
+832206210
+30599564
+376028357
+817581990
+595827745
+728938056
+826259116
+307083951
+720031367
+77550944
+788603120
+797045758
+227838690
+808310235
+209007606
+307480074
+693608735
+782171634
+282223343
+975307902
+18595710
+340781978
+82239757
+622500065
+135311607
+270708610
+746464462
+302501154
+The prime factors of 227838690 are: 2, 3, 3, 3, 5, 19, 23, 1931
+The prime factors of 808310235 are: 3, 5, 53887349
+The prime factors of 746464462 are: 2, 131, 251, 11351
+The prime factors of 832206210 are: 2, 3, 5, 11, 59, 42743
+The prime factors of 307083951 are: 3, 3, 34120439
+The prime factors of 625340858 are: 2, 15091, 20719
+The prime factors of 826259116 are: 2, 2, 227, 909977
+The prime factors of 683450426 are: 2, 7451, 45863
+The prime factors of 551032884 are: 2, 2, 3, 3, 179, 233, 367
+The prime factors of 797045758 are: 2, 398522879
+The prime factors of 905544010 are: 2, 5, 7, 7, 7, 264007
+The prime factors of 811701500 are: 2, 2, 5, 5, 5, 1623403
+The prime factors of 270708610 are: 2, 5, 27070861
+The prime factors of 788603120 are: 2, 2, 2, 2, 5, 61, 161599
+The prime factors of 82239757 are: 751, 109507
+The prime factors of 151988830 are: 2, 5, 7, 23, 67, 1409
+The prime factors of 376028357 are: 23, 31, 97, 5437
+The prime factors of 282223343 are: 97, 2909519
+The prime factors of 302501154 are: 2, 3, 50416859
+The prime factors of 782171634 are: 2, 3, 43, 137, 22129
+The prime factors of 542758887 are: 3, 3, 3, 3, 11, 211, 2887
+The prime factors of 595827745 are: 5, 19, 6271871
+The prime factors of 18595710 are: 2, 3, 3, 3, 5, 7, 9839
+The prime factors of 817581990 are: 2, 3, 5, 27252733
+The prime factors of 340781978 are: 2, 170390989
+The prime factors of 622500065 are: 5, 11, 11318183
+The prime factors of 693608735 are: 5, 61, 2274127
+The prime factors of 209007606 are: 2, 3, 43, 547, 1481
+The prime factors of 683761552 are: 2, 2, 2, 2, 3257, 13121
+The prime factors of 720031367 are: 11, 113, 373, 1553
+The prime factors of 135311607 are: 3, 3, 3, 353, 14197
+The prime factors of 77550944 are: 2, 2, 2, 2, 2, 643, 3769
+The prime factors of 975307902 are: 2, 3, 9319, 17443
+The prime factors of 728938056 are: 2, 2, 2, 3, 7, 11, 79, 4993
+The prime factors of 30599564 are: 2, 2, 1759, 4349
+The prime factors of 307480074 are: 2, 3, 11, 41, 199, 571

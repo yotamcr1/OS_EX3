@@ -1,0 +1,144 @@
+95678032
+418125058
+730116876
+676819315
+377608192
+913676241
+684112430
+375142928
+476290266
+576262199
+973244526
+179082446
+583582027
+757379385
+77185236
+414298549
+415061106
+697085810
+162988260
+536329940
+833321729
+591391335
+556164888
+846953313
+176287864
+288668409
+378011281
+281975683
+146633531
+913815013
+213166498
+991900113
+94139435
+72292819
+901475877
+347236564
+952814989
+210523057
+228675575
+594899494
+443799511
+428302865
+540656964
+1296556
+350011571
+880750868
+156481574
+793976824
+896242319
+435652200
+489031744
+862779201
+417024723
+870920988
+742346320
+537427900
+661307944
+343223176
+300443526
+822629862
+603056003
+332228125
+689502298
+476395555
+737590393
+484799918
+158340584
+157809145
+23843809
+169374454
+614170002
+296797118
+The prime factors of 880750868 are: 2, 2, 23, 193, 49603
+The prime factors of 228675575 are: 5, 5, 9147023
+The prime factors of 296797118 are: 2, 17, 8729327
+The prime factors of 95678032 are: 2, 2, 2, 2, 229, 26113
+The prime factors of 730116876 are: 2, 2, 3, 19, 23, 29, 4801
+The prime factors of 375142928 are: 2, 2, 2, 2, 23446433
+The prime factors of 952814989 are: 7, 409, 332803
+The prime factors of 689502298 are: 2, 479, 719731
+The prime factors of 583582027 are: 7, 199, 418939
+The prime factors of 603056003 are: 11, 41, 1337153
+The prime factors of 179082446 are: 2, 127, 269, 2621
+The prime factors of 536329940 are: 2, 2, 5, 17, 463, 3407
+The prime factors of 576262199 are: 71, 8116369
+The prime factors of 415061106 are: 2, 3, 59, 1063, 1103
+The prime factors of 973244526 are: 2, 3, 17, 9541613
+The prime factors of 540656964 are: 2, 2, 3, 3, 3, 5006083
+The prime factors of 414298549 are: 7, 137, 151, 2861
+The prime factors of 476290266 are: 2, 3, 79381711
+The prime factors of 72292819 are: 4793, 15083
+The prime factors of 288668409 are: 3, 61, 227, 6949
+The prime factors of 822629862 are: 2, 3, 3, 45701659
+The prime factors of 476395555 are: 5, 443, 215077
+The prime factors of 162988260 are: 2, 2, 3, 5, 2716471
+The prime factors of 737590393 are: 19, 38820547
+The prime factors of 213166498 are: 2, 1171, 91019
+The prime factors of 676819315 are: 5, 135363863
+The prime factors of 661307944 are: 2, 2, 2, 11, 1423, 5281
+The prime factors of 793976824 are: 2, 2, 2, 99247103
+The prime factors of 846953313 are: 3, 282317771
+The prime factors of 157809145 are: 5, 13, 83, 29251
+The prime factors of 417024723 are: 3, 53, 643, 4079
+The prime factors of 537427900 are: 2, 2, 5, 5, 5374279
+The prime factors of 332228125 are: 5, 5, 5, 5, 5, 41, 2593
+The prime factors of 281975683 are: 11, 25634153
+The prime factors of 176287864 are: 2, 2, 2, 41, 229, 2347
+The prime factors of 556164888 are: 2, 2, 2, 3, 1583, 14639
+The prime factors of 146633531 are: 11, 71, 187751
+The prime factors of 94139435 are: 5, 13, 293, 4943
+The prime factors of 757379385 are: 3, 3, 5, 7, 47, 51157
+The prime factors of 377608192 are: 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 13, 13, 1091
+The prime factors of 435652200 are: 2, 2, 2, 3, 3, 5, 5, 17, 23, 619
+The prime factors of 833321729 are: 257, 3242497
+The prime factors of 1296556 are: 2, 2, 17, 23, 829
+The prime factors of 913815013 are: 19, 48095527
+The prime factors of 697085810 are: 2, 5, 71, 981811
+The prime factors of 23843809 are: 11, 17, 127507
+The prime factors of 158340584 are: 2, 2, 2, 17, 571, 2039
+The prime factors of 347236564 are: 2, 2, 37, 47, 49919
+The prime factors of 594899494 are: 2, 7, 7, 101, 60103
+The prime factors of 418125058 are: 2, 13, 19, 846407
+The prime factors of 300443526 are: 2, 3, 3, 3, 23, 241903
+The prime factors of 428302865 are: 5, 85660573
+The prime factors of 684112430 are: 2, 5, 68411243
+The prime factors of 443799511 are: 19, 181, 129049
+The prime factors of 870920988 are: 2, 2, 3, 7, 10368107
+The prime factors of 378011281 are: 378011281
+The prime factors of 913676241 are: 3, 673, 452539
+The prime factors of 742346320 are: 2, 2, 2, 2, 5, 9279329
+The prime factors of 901475877 are: 3, 31, 9693289
+The prime factors of 591391335 are: 3, 5, 39426089
+The prime factors of 156481574 are: 2, 331, 236377
+The prime factors of 77185236 are: 2, 2, 3, 17, 71, 73, 73
+The prime factors of 489031744 are: 2, 2, 2, 2, 2, 2, 7641121
+The prime factors of 614170002 are: 2, 3, 102361667
+The prime factors of 350011571 are: 7, 13, 3846281
+The prime factors of 862779201 are: 3, 287593067
+The prime factors of 484799918 are: 2, 242399959
+The prime factors of 169374454 are: 2, 73, 179, 6481
+The prime factors of 896242319 are: 7, 128034617
+The prime factors of 343223176 are: 2, 2, 2, 761, 56377
+The prime factors of 210523057 are: 5849, 35993
+The prime factors of 991900113 are: 3, 330633371

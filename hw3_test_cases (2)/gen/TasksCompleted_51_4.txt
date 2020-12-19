@@ -1,0 +1,26 @@
+370139950
+609355644
+668313763
+243492540
+677408655
+606756282
+461612542
+369470681
+697427705
+382146251
+680109337
+25354433
+332335260
+The prime factors of 606756282 are: 2, 3, 11, 17, 540781
+The prime factors of 243492540 are: 2, 2, 3, 5, 4058209
+The prime factors of 382146251 are: 382146251
+The prime factors of 25354433 are: 13, 73, 26717
+The prime factors of 609355644 are: 2, 2, 3, 50779637
+The prime factors of 369470681 are: 149, 2479669
+The prime factors of 332335260 are: 2, 2, 3, 3, 5, 113, 16339
+The prime factors of 668313763 are: 13, 51408751
+The prime factors of 677408655 are: 3, 5, 7, 11, 586501
+The prime factors of 697427705 are: 5, 13, 10729657
+The prime factors of 680109337 are: 167, 211, 19301
+The prime factors of 370139950 are: 2, 5, 5, 19, 389621
+The prime factors of 461612542 are: 2, 1291, 178781

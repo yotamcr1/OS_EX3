@@ -1,0 +1,28 @@
+487752633
+364894797
+991436247
+182449701
+926033741
+82152887
+116647848
+438888930
+912371391
+195589830
+563334616
+444692646
+903332294
+555339957
+The prime factors of 195589830 are: 2, 3, 5, 97, 67213
+The prime factors of 116647848 are: 2, 2, 2, 3, 3, 839, 1931
+The prime factors of 555339957 are: 3, 41, 4514959
+The prime factors of 563334616 are: 2, 2, 2, 13, 5416679
+The prime factors of 182449701 are: 3, 3, 7, 29, 37, 2699
+The prime factors of 82152887 are: 82152887
+The prime factors of 903332294 are: 2, 79, 5717293
+The prime factors of 364894797 are: 3, 67, 1815397
+The prime factors of 912371391 are: 3, 3, 3, 2339, 14447
+The prime factors of 487752633 are: 3, 3, 54194737
+The prime factors of 926033741 are: 17, 17, 61, 52529
+The prime factors of 444692646 are: 2, 3, 3, 3, 8235049
+The prime factors of 438888930 are: 2, 3, 5, 14629631
+The prime factors of 991436247 are: 3, 3, 3, 36719861

@@ -1,3 +1,64 @@
 25
 13
 1337
+30
+24
+999999999
+123456
+55
+The prime factors of 1337 are: 7, 191
+The prime factors of 30 are: 2, 3, 5
+The prime factors of 25 are: 5, 5
+The prime factors of 24 are: 2, 2, 2, 3
+The prime factors of 123456 are: 2, 2, 2, 2, 2, 2, 3, 643
+The prime factors of 13 are: 13
+The prime factors of 55 are: 5, 11
+The prime factors of 999999999 are: 3, 3, 3, 3, 37, 333667
+The prime factors of 1337 are: 7, 191
+The prime factors of 30 are: 2, 3, 5
+The prime factors of 25 are: 5, 5
+The prime factors of 24 are: 2, 2, 2, 3
+The prime factors of 123456 are: 2, 2, 2, 2, 2, 2, 3, 643
+The prime factors of 13 are: 13
+The prime factors of 55 are: 5, 11
+The prime factors of 999999999 are: 3, 3, 3, 3, 37, 333667
+The prime factors of 1337 are: 7, 191
+The prime factors of 25 are: 5, 5
+The prime factors of 30 are: 2, 3, 5
+The prime factors of 24 are: 2, 2, 2, 3
+The prime factors of 123456 are: 2, 2, 2, 2, 2, 2, 3, 643
+The prime factors of 13 are: 13
+The prime factors of 999999999 are: 3, 3, 3, 3, 37, 333667
+The prime factors of 55 are: 5, 11
+The prime factors of 1337 are: 7, 191
+The prime factors of 30 are: 2, 3, 5
+The prime factors of 25 are: 5, 5
+The prime factors of 24 are: 2, 2, 2, 3
+The prime factors of 123456 are: 2, 2, 2, 2, 2, 2, 3, 643
+The prime factors of 13 are: 13
+The prime factors of 55 are: 5, 11
+The prime factors of 999999999 are: 3, 3, 3, 3, 37, 333667
+The prime factors of 1337 are: 7, 191
+The prime factors of 25 are: 5, 5
+The prime factors of 30 are: 2, 3, 5
+The prime factors of 24 are: 2, 2, 2, 3
+The prime factors of 123456 are: 2, 2, 2, 2, 2, 2, 3, 643
+The prime factors of 13 are: 13
+The prime factors of 55 are: 5, 11
+The prime factors of 999999999 are: 3, 3, 3, 3, 37, 333667
+The prime factors of 1337 are: 7, 191
+The prime factors of 30 are: 2, 3, 5
+The prime factors of 25 are: 5, 5
+The prime factors of 24 are: 2, 2, 2, 3
+The prime factors of 123456 are: 2, 2, 2, 2, 2, 2, 3, 643
+The prime factors of 13 are: 13
+The prime factors of 55 are: 5, 11
+The prime factors of 999999999 are: 3, 3, 3, 3, 37, 333667
+The prime factors of 1337 are: 7, 191
+The prime factors of 30 are: 2, 3, 5
+The prime factors of 25 are: 5, 5
+The prime factors of 24 are: 2, 2, 2, 3
+The prime factors of 123456 are: 2, 2, 2, 2, 2, 2, 3, 643
+The prime factors of 13 are: 13
+The prime factors of 55 are: 5, 11
+The prime factors of 999999999 are: 3, 3, 3, 3, 37, 333667

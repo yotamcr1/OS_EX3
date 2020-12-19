@@ -1,0 +1,66 @@
+567329922
+271532218
+189102390
+578483460
+379411300
+349334892
+327673672
+3115763
+825774407
+675777577
+936199485
+137808867
+802227085
+245514712
+916187953
+534488781
+626347079
+802054255
+755457670
+322249333
+36211657
+546594460
+898374311
+90820155
+747737036
+224913098
+362789928
+267287711
+441536481
+371547625
+975552042
+915586548
+854280401
+The prime factors of 747737036 are: 2, 2, 587, 318457
+The prime factors of 327673672 are: 2, 2, 2, 79, 518471
+The prime factors of 916187953 are: 17, 211, 255419
+The prime factors of 936199485 are: 3, 3, 3, 5, 13, 533447
+The prime factors of 322249333 are: 7, 7, 71, 92627
+The prime factors of 567329922 are: 2, 3, 3, 31518329
+The prime factors of 441536481 are: 3, 3, 3, 53, 308551
+The prime factors of 271532218 are: 2, 181, 827, 907
+The prime factors of 137808867 are: 3, 7, 367, 17881
+The prime factors of 90820155 are: 3, 5, 61, 99257
+The prime factors of 245514712 are: 2, 2, 2, 30689339
+The prime factors of 534488781 are: 3, 71, 2509337
+The prime factors of 898374311 are: 509, 1764979
+The prime factors of 349334892 are: 2, 2, 3, 3, 9703747
+The prime factors of 36211657 are: 36211657
+The prime factors of 362789928 are: 2, 2, 2, 3, 3, 3, 3, 17, 32933
+The prime factors of 267287711 are: 267287711
+The prime factors of 578483460 are: 2, 2, 3, 3, 5, 281, 11437
+The prime factors of 915586548 are: 2, 2, 3, 233, 327463
+The prime factors of 371547625 are: 5, 5, 5, 233, 12757
+The prime factors of 546594460 are: 2, 2, 5, 27329723
+The prime factors of 854280401 are: 13, 173, 379849
+The prime factors of 802054255 are: 5, 211, 760241
+The prime factors of 802227085 are: 5, 11, 167, 167, 523
+The prime factors of 755457670 are: 2, 5, 11, 19, 361463
+The prime factors of 825774407 are: 1951, 423257
+The prime factors of 975552042 are: 2, 3, 5881, 27647
+The prime factors of 626347079 are: 626347079
+The prime factors of 3115763 are: 7, 7, 63587
+The prime factors of 379411300 are: 2, 2, 5, 5, 59, 107, 601
+The prime factors of 675777577 are: 675777577
+The prime factors of 189102390 are: 2, 3, 5, 17, 43, 8623
+The prime factors of 224913098 are: 2, 112456549

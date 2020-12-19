@@ -22,17 +22,6 @@
 #define TIMEOUT 100000000 // have to check it again
 
 
-//Global Variable Decleration of Factory.c:
-char inout_file_address[MAX_OUTPUT_STR_LENGTH];
-
-//struct declaration
-/*
-typedef struct thread {
-	HANDLE output_file;
-	int bytes_from_the_start;
-	int task_number;
-} thread_values, *Pthread_values;
-*/
 
 
 typedef struct node {

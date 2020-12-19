@@ -1,10 +1,8 @@
 #include "factory.h"
 //all the functions in this module are debuged
 
-queue_pointer* InitializeQueue(/*int offset*/) {
-	//TBD: queue_pointer should allocate and return here
+queue_pointer* InitializeQueue() {
 	queue_pointer* pq = (queue_pointer*)malloc(sizeof(queue_pointer));
-	/*pq->pq_head_node = allocate_place_for_node(offset);*/
 	return pq;
 }
 
@@ -108,7 +106,7 @@ void PrintQueue(queue_pointer* pq)
 {
 	node* temp_node = pq->pq_head_node;
 	printf("[");
-	while (temp_node != NULL) {
+	while (temp_node != NULL && temp_node->offset_in_bytes != NULL) {
 		printf("%d", temp_node->offset_in_bytes);
 		if (temp_node->next != NULL)
 			printf(", ");
