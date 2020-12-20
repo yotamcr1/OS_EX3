@@ -1,9 +1,5 @@
-#include "factory.h"
+#include "Lock.h"
 
-
-//the function create all the mutex and semaphore for the struct and initialize the lock struct
-//input: number of threads
-//output: initialized struct of lock
 
 lock* InitializLock(int num_of_threads) {
 	HANDLE mutex = CreateMutex(
@@ -38,11 +34,6 @@ lock* InitializLock(int num_of_threads) {
 	return new_lock;
 }
 
-
-//the function allocate place for the lock and fill his fields
-//input: handles to 2 mutex and 1 semaphore
-//output: initialized lock struct
-
 lock* allocate_place_for_lock(HANDLE mutex, HANDLE turnstile, HANDLE roomEmpty) {
 	lock* new_lock = (lock*)malloc(sizeof(lock));
 	if (new_lock != NULL) {
@@ -53,11 +44,6 @@ lock* allocate_place_for_lock(HANDLE mutex, HANDLE turnstile, HANDLE roomEmpty) 
 	}
 	return new_lock;
 }
-
-
-//The function performs a lock for reading
-//threads can read at the same time but while another thread is writing.
-//input: pointer to lock struct
 
 void read_lock(lock* lock) {
 	DWORD wait_code;
@@ -98,10 +84,6 @@ void read_lock(lock* lock) {
 	return;
 }
 
-
-//The function performs a release of the lock from a reading lock made by the same thread
-//input: pointer to lock struct
-
 void read_release(lock* lock) {
 	DWORD wait_code;
 	BOOL ret_val;
@@ -129,10 +111,6 @@ void read_release(lock* lock) {
 	return;
 }
 
-
-//The function performs a lock for writing
-//input: pointer to lock struct
-
 void write_lock(lock* lock) {
 	DWORD wait_code;
 	wait_code = WaitForSingleObject(lock->turnstile, TIMEOUT);
@@ -150,9 +128,6 @@ void write_lock(lock* lock) {
 	return;
 }
 
-//The function performs a release of the lock from a writing lock made by the same thread
-//input: pointer to struct lock
-
 void write_release(lock* lock) {
 	BOOL ret_val;
 	ret_val = ReleaseMutex(lock->turnstile);
@@ -169,9 +144,6 @@ void write_release(lock* lock) {
 	}
 }
 
-//the function release all the resources of the lock
-//input: pointer to struct lock
-
 void DestroyLock(lock* lock) {
 	CloseHandle(lock->Mutex);
 	CloseHandle(lock->roomEmpty);
@@ -179,16 +151,3 @@ void DestroyLock(lock* lock) {
 	free(lock);
 	lock = NULL;
 }
-
-
-
-
-
-
-/*maybe replace all the errors with:
-static void ReportErrorAndEndProgram()
-{
-	printf("Encountered error, ending program. Last Error = 0x%x\n", GetLastError() );
-	exit(1);
-}
-*/
